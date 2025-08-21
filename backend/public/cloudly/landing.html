@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b1220" />
+  <meta name="robots" content="noindex" />
+  <title>Cloudly — Simple Cloud Storage</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#0b1220; --card:#0f172a; --muted:#94a3b8; --txt:#e5e7eb;
+      --accent:#60a5fa; --ok:#22c55e; --line:#1f2937; --ring:#3b82f6; --warn:#f59e0b;
+      --fade:translateY(10px);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;background:#0b1220;color:var(--txt)}
+    a{color:inherit;text-decoration:none}
+    .container{max-width:1180px;margin:0 auto;padding:0 28px}
+    .btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#001029;border:none;border-radius:12px;padding:12px 18px;font-weight:700;cursor:pointer;position:relative;overflow:hidden}
+    .btn.ghost{background:transparent;color:#cbd5e1;border:1px solid #334155}
+    .btn.ok{background:var(--ok);color:#001b09}
+    .badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#0ea5e9;color:#001018;font-weight:800;font-size:12px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    .logo{font-weight:800;color:#fff;letter-spacing:.4px}
+    .logo b{color:var(--accent)}
+    header{position:sticky;top:0;z-index:50;background:rgba(11,18,32,.5);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.04)}
+    nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+    nav .menu{display:flex;gap:18px;align-items:center}
+    nav .menu a{color:#cbd5e1;font-weight:600;opacity:.8;padding:6px 8px;border-radius:8px}
+    nav .menu a.active{opacity:1;background:#0f172a;border:1px solid #1f2937}
+    .hero{padding:64px 0 32px;display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:center}
+    h1{font-size:44px;margin:.2em 0;color:#fff}
+    p.lead{color:#cbd5e1;font-size:18px;line-height:1.7}
+    .stats{display:flex;gap:24px;margin-top:18px}
+    .stats .stat{display:flex;align-items:center;gap:10px;color:#cbd5e1}
+    .stat .n{font-size:22px;color:#fff;font-weight:800}
+    .logos{opacity:.9;display:grid;grid-template-columns:repeat(5,1fr);gap:18px;margin-top:24px}
+    .logos .card{display:flex;align-items:center;justify-content:center;font-weight:800;min-height:64px}
+    .section{padding:56px 0}
+    .section h2{margin:0 0 14px 0;font-size:28px}
+    .muted{color:var(--muted)}
+    .grid{display:grid;gap:18px}
+    .features{grid-template-columns:repeat(3,1fr)}
+    .feature h3{margin:10px 0 6px 0}
+    .split{grid-template-columns:1fr 1fr}
+    .pricing{grid-template-columns:repeat(3,1fr)}
+    .price .value{font-size:34px;color:#fff;margin:6px 0}
+    .price ul{list-style:none;padding:0;margin:12px 0 0 0}
+    .price li{display:flex;align-items:center;gap:8px;color:#cbd5e1;margin:6px 0}
+    .price .popular{border:1.5px solid var(--ring);box-shadow:0 0 0 4px rgba(59,130,246,.15)}
+    .testi .quote{font-size:18px;line-height:1.7}
+    .faq details{background:rgba(255,255,255,.02);border:1px solid var(--line);padding:14px;border-radius:12px}
+    .faq summary{cursor:pointer;font-weight:700}
+    .faq details + details{margin-top:10px}
+    footer{padding:34px 0;border-top:1px solid rgba(255,255,255,.06);color:#94a3b8;text-align:center;margin-top:48px}
+    #faq-launcher{position:fixed;right:22px;bottom:22px;background:var(--ok);color:#001b09;border:none;border-radius:999px;padding:14px 18px;font-weight:800;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.35);z-index:9998}
+    .clw-fab{ display:none !important; } /* escondemos o FAB do widget‑lite */
+
+    /* NOVO: seções extras */
+    .how{grid-template-columns:repeat(3,1fr)}
+    .how .step .num{width:36px;height:36px;border-radius:999px;background:#111827;border:1px solid #1f2937;display:flex;align-items:center;justify-content:center;font-weight:800;color:#93c5fd}
+    .usecases{grid-template-columns:repeat(3,1fr)}
+    .usecases .tag{font-size:12px;border:1px dashed #334155;border-radius:999px;padding:4px 8px;color:#93c5fd}
+    .integrations{grid-template-columns:repeat(6,1fr)}
+    .integrations .card{min-height:72px}
+    .cta{display:flex;align-items:center;justify-content:space-between;gap:18px;background:linear-gradient(120deg,#0f172a,#0b1220);border:1px solid #1f2937}
+    .cta .title{font-size:24px;font-weight:800}
+    .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#0b1220;border:1px solid #1f2937;border-bottom-width:2px;border-radius:8px;padding:3px 6px;color:#d1d5db}
+
+    /* Carrossel simples */
+    .carousel{position:relative;overflow:hidden}
+    .carousel-track{display:flex;gap:18px;transition:transform .5s ease}
+    .carousel .item{min-width:calc(50% - 9px)}
+    .carousel .nav{position:absolute;top:50%;transform:translateY(-50%);display:flex;gap:8px;width:100%;justify-content:space-between}
+    .carousel .nav button{background:#0f172a;border:1px solid #334155;color:#e5e7eb;border-radius:10px;padding:8px 10px;cursor:pointer}
+
+    /* Scroll reveal animação leve */
+    .reveal{opacity:0;transform:var(--fade);transition:opacity .5s ease,transform .5s ease}
+    .reveal.in{opacity:1;transform:none}
+
+    /* Back to top */
+    #toTop{position:fixed;right:22px;bottom:92px;background:#111827;border:1px solid #1f2937;border-radius:10px;padding:10px 12px;color:#cbd5e1;display:none;z-index:9997;cursor:pointer}
+
+    /* Powered by LLaMA badge */
+    .llama{display:inline-flex;align-items:center;gap:8px;background:#0f172a;border:1px solid #1f2937;border-radius:12px;padding:8px 12px;color:#cbd5e1}
+
+    /* Pricing toggle */
+    .toggle{display:inline-flex;align-items:center;gap:10px;background:#0f172a;border:1px solid #1f2937;border-radius:999px;padding:6px 8px}
+    .switch{position:relative;width:56px;height:28px;background:#111827;border:1px solid #1f2937;border-radius:999px;cursor:pointer}
+    .switch::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:999px;background:#3b82f6;transition:left .2s ease}
+    .switch.on::after{left:31px}
+
+    /* Command palette */
+    .palette{position:fixed;inset:0;display:none;align-items:flex-start;justify-content:center;background:rgba(0,0,0,.35);backdrop-filter:blur(2px);z-index:2147482998}
+    .palette .box{margin-top:10vh;width:680px;max-width:92vw;background:#0f172a;border:1px solid #1f2937;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,.55);overflow:hidden}
+    .palette input{width:100%;padding:14px 16px;background:#0b1220;border:0;border-bottom:1px solid #1f2937;color:#e5e7eb;font-size:16px}
+    .palette ul{list-style:none;margin:0;padding:8px;max-height:46vh;overflow:auto}
+    .palette li{padding:10px 12px;border-radius:10px;color:#cbd5e1;cursor:pointer}
+    .palette li:hover{background:#111827}
+
+    @media (max-width:1000px){
+      .hero{grid-template-columns:1fr}
+      .features,.pricing,.logos,.split,.how,.usecases,.integrations{grid-template-columns:1fr}
+      .carousel .item{min-width:100%}
+      .cta{flex-direction:column;align-items:flex-start}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">Cloud<b>ly</b></div>
+        <div class="menu" id="nav-menu">
+          <a href="#features">Features</a>
+          <a href="#how">How it works</a>
+          <a href="#usecases">Use cases</a>
+          <a href="#integrations">Integrations</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#faq">FAQ</a>
+          <button class="btn ghost" id="nav-ask">Ask Cloudly</button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <main class="container">
+    <section class="hero">
+      <div class="reveal">
+        <span class="badge">New</span>
+        <h1>Simple, secure cloud storage for people and small teams.</h1>
+        <p class="lead">Desktop & mobile apps, 30‑day file history and encrypted transfers by default. Try Cloudly free for 14 days — no credit card.</p>
+        <div style="margin-top:18px;display:flex;gap:12px;flex-wrap:wrap">
+          <button class="btn" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">Try it free</button>
+          <button id="hero-ask" class="btn ghost">Ask Cloudly</button>
+        </div>
+
+        <div class="stats">
+          <div class="stat"><span class="n" data-count="2" data-suffix=" TB">0</span> storage on Pro</div>
+          <div class="stat"><span class="n" data-count="99.9" data-suffix="%">0</span> uptime</div>
+          <div class="stat"><span class="n" data-count="256" data-prefix="AES‑">AES‑0</span> at rest</div>
+        </div>
+
+        <div class="logos">
+          <div class="card">ACME</div><div class="card">METAFOG</div><div class="card">PIXEL&CO</div><div class="card">NOVA</div><div class="card">BLUEFOX</div>
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <h3 style="margin:0 0 12px 0">Live assistant</h3>
+        <p class="muted" style="margin:0 0 10px 0">Ask product questions and get instant answers sourced from our docs.</p>
+        <div class="grid split" style="margin-top:6px">
+          <div>
+            <div class="muted">Try:</div>
+            <ul style="margin:8px 0 0 16px; color:#cbd5e1">
+              <li>How much is <b>Plus</b> and how much storage?</li>
+              <li>Do you encrypt files at rest?</li>
+              <li>Do you support SSO / data residency?</li>
+            </ul>
+          </div>
+          <div class="card" style="background:rgba(96,165,250,.08)">
+            <div class="muted">Tip</div>
+            <div style="color:#dbeafe">Enterprise questions trigger a contact form so sales can follow up.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section id="how" class="section">
+      <h2 class="reveal">How it works</h2>
+      <p class="muted reveal">Fast setup in minutes — end‑to‑end encryption, team management, and AI assistant included.</p>
+      <div class="grid how" style="margin-top:14px">
+        <div class="card step reveal">
+          <div class="num">1</div>
+          <h3>Sign up & import</h3>
+          <p class="muted">Create your workspace and import files from Drive/Dropbox or your device.</p>
+        </div>
+        <div class="card step reveal">
+          <div class="num">2</div>
+          <h3>Share securely</h3>
+          <p class="muted">Invite teammates, set permissions, and share links with password/expiration.</p>
+        </div>
+        <div class="card step reveal">
+          <div class="num">3</div>
+          <h3>Ask the assistant</h3>
+          <p class="muted">Use the AI to find docs, summarize content, and answer product questions.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- USE CASES -->
+    <section id="usecases" class="section">
+      <h2 class="reveal">Use cases</h2>
+      <p class="muted reveal">Cloudly adapts to your workflow.</p>
+      <div class="grid usecases" style="margin-top:14px">
+        <div class="card reveal">
+          <div class="tag">Operations</div>
+          <h3>Onboarding hub</h3>
+          <p class="muted">Store playbooks and checklists. Let new hires self‑serve with the AI FAQ.</p>
+          <button class="btn ghost" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">See plans</button>
+        </div>
+        <div class="card reveal">
+          <div class="tag">Sales</div>
+          <h3>Deal rooms</h3>
+          <p class="muted">Share proposals securely, track access, and answer RFPs faster with AI.</p>
+          <button class="btn ghost" id="use-ask">Ask the assistant</button>
+        </div>
+        <div class="card reveal">
+          <div class="tag">Product</div>
+          <h3>Research vault</h3>
+          <p class="muted">Keep interviews, notes, and specs searchable — summarized on tap.</p>
+          <button class="btn ghost" onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to top</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- INTEGRATIONS -->
+    <section id="integrations" class="section">
+      <h2 class="reveal">Integrations</h2>
+      <p class="muted reveal">Connect your stack in a click.</p>
+      <div class="grid integrations" style="margin-top:14px">
+        <div class="card reveal">Slack</div>
+        <div class="card reveal">Zapier</div>
+        <div class="card reveal">Google Drive</div>
+        <div class="card reveal">Notion</div>
+        <div class="card reveal">Jira</div>
+        <div class="card reveal">GitHub</div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS CAROUSEL -->
+    <section id="testimonials" class="section">
+      <h2 class="reveal">What customers say</h2>
+      <div class="card carousel reveal">
+        <div class="carousel-track" id="t-track">
+          <div class="item card" style="min-height:140px">
+            <div class="quote">“Cloudly cut onboarding time in half. The AI FAQ let the team self‑serve instantly.”</div>
+            <div class="muted" style="margin-top:8px">— Julia M., Operations @ ACME</div>
+          </div>
+          <div class="item card" style="min-height:140px">
+            <div class="quote">“Secure sharing + quick search. Our PMs live in it.”</div>
+            <div class="muted" style="margin-top:8px">— Diego R., Product @ NOVA</div>
+          </div>
+          <div class="item card" style="min-height:140px">
+            <div class="quote">“We replaced 3 tools. Delta sync is blazing fast.”</div>
+            <div class="muted" style="margin-top:8px">— Hannah K., Eng @ PIXEL&CO</div>
+          </div>
+        </div>
+        <div class="nav">
+          <button id="t-prev">‹</button>
+          <button id="t-next">›</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECURITY -->
+    <section id="security" class="section">
+      <div class="grid split">
+        <div class="card reveal">
+          <h3>Compliance & Controls</h3>
+          <p class="muted">Admin consoles let you enforce MFA, device approvals and session timeouts. Audit logs available on Plus/Pro.</p>
+          <ul style="color:#cbd5e1; margin:10px 0 0 18px">
+            <li>Two‑factor authentication (TOTP/SMS)</li>
+            <li>SSO (SAML/SCIM) on Enterprise</li>
+            <li>Data residency options</li>
+          </ul>
+        </div>
+        <div class="card testi reveal">
+          <div class="quote">“Cloudly cut our onboarding time in half. The built‑in AI FAQ helped new teammates self‑serve instantly.”</div>
+          <div class="muted" style="margin-top:8px">— Julia M., Operations @ ACME</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing" class="section">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div>
+          <h2 class="reveal" style="margin-bottom:4px">Pricing</h2>
+          <p class="muted reveal">14‑day free trial on all plans. Annual billing saves ~15%.</p>
+        </div>
+        <div class="toggle reveal" title="Monthly / Annual">
+          <span class="muted">Monthly</span>
+          <div id="price-switch" class="switch" role="switch" aria-checked="false" tabindex="0"></div>
+          <span class="muted">Annual <span class="badge" style="background:#16a34a;color:#05170c">‑15%</span></span>
+        </div>
+      </div>
+      <div class="grid pricing" style="margin-top:14px">
+        <div class="card price reveal">
+          <h3>Basic</h3><div class="value" data-month="2.99" data-year="2.54">$2.99</div><p class="muted">50 GB • Personal</p>
+          <ul><li>✔ Desktop & mobile apps</li><li>✔ 30‑day version history</li></ul>
+          <button class="btn" style="margin-top:12px">Choose Basic</button>
+        </div>
+        <div class="card price popular reveal">
+          <div class="badge" style="background:var(--warn);color:#1a1300">Most popular</div>
+          <h3>Plus</h3><div class="value" data-month="7.99" data-year="6.79">$7.99</div><p class="muted">500 GB • Teams</p>
+          <ul><li>✔ Priority chat support</li><li>✔ Admin controls & MFA</li><li>✔ Slack & Zapier integrations</li></ul>
+          <button class="btn" style="margin-top:12px">Choose Plus</button>
+        </div>
+        <div class="card price reveal">
+          <h3>Pro</h3><div class="value" data-month="14.99" data-year="12.74">$14.99</div><p class="muted">2 TB • Teams</p>
+          <ul><li>✔ Everything in Plus</li><li>✔ Advanced sharing controls</li><li>✔ Priority support</li></ul>
+          <button class="btn" style="margin-top:12px">Choose Pro</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="section">
+      <h2 class="reveal">FAQ</h2>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px">
+        <input id="faq-search" placeholder="Search FAQ…" style="flex:1;max-width:420px;background:#0f172a;border:1px solid #1f2937;border-radius:10px;padding:10px;color:#e5e7eb">
+        <button class="btn ghost" id="faq-ask">Ask the assistant</button>
+      </div>
+      <p class="muted reveal">Quick answers. For anything else, ask the assistant in the corner.</p>
+      <div class="faq" style="margin-top:10px" id="faq-list">
+        <details class="reveal"><summary>How is my data protected?</summary>
+          <div class="muted" style="margin-top:8px">Files in transit use TLS 1.3. At rest, data is encrypted with AES‑256. MFA is available and admins can enforce it on team plans.</div>
+        </details>
+        <details class="reveal"><summary>Do you offer SSO and data residency?</summary>
+          <div class="muted" style="margin-top:8px">Yes — on Enterprise contracts we support SSO (SAML/SCIM) and data residency options. Ask the assistant to reach sales.</div>
+        </details>
+        <details class="reveal"><summary>Refund policy</summary>
+          <div class="muted" style="margin-top:8px">Monthly plans refundable within 7 days; annual plans within 30 days on a pro‑rated basis.</div>
+        </details>
+      </div>
+    </section>
+
+    <!-- CTA STRIP -->
+    <section class="section">
+      <div class="card cta reveal">
+        <div>
+          <div class="title">Ready to try Cloudly?</div>
+          <div class="muted">Spin up your workspace and invite the team. Press <span class="kbd">?</span> to ask the assistant from anywhere or <span class="kbd">Ctrl</span>+<span class="kbd">K</span> to search the page.</div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn ok" id="cta-ask">Ask Cloudly</button>
+          <button class="btn" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">Start free trial</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;align-items:center">
+      <span>© Cloudly — Simulation for portfolio/demo purposes only.</span>
+      <span class="llama">⚡ Powered by LLaMA (Meta AI)</span>
+    </div>
+  </footer>
+
+  <!-- Botões utilitários -->
+  <button id="faq-launcher">Ask Cloudly</button>
+  <button id="toTop" title="Back to top">↑</button>
+
+  <!-- Command palette -->
+  <div class="palette" id="palette" aria-hidden="true">
+    <div class="box">
+      <input id="pal-input" placeholder="Jump to… (type: features, pricing, faq…)" aria-label="Command palette" />
+      <ul id="pal-list"></ul>
+    </div>
+  </div>
+
+  <!-- 🔵 Widget‑Lite (sem iframe/caixa branca) -->
+  <script
+    src="/cloudly/widget-lite.js"
+    data-site-key="cloudly123"
+    data-api="">
+  </script>
+
+  <!-- Ligações + interações -->
+  <script>
+    // --- Button ripple (pequeno toque UX)
+    document.addEventListener('click', function(e){
+      const b = e.target.closest('.btn');
+      if(!b) return;
+      const r = document.createElement('span');
+      const rect = b.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      r.style.cssText = 'position:absolute;border-radius:50%;transform:scale(0);opacity:.25;background:#fff;pointer-events:none;'
+      + 'width:'+size+'px;height:'+size+'px;left:'+(e.clientX-rect.left-size/2)+'px;top:'+(e.clientY-rect.top-size/2)+'px;transition:transform .45s, opacity .6s;';
+      b.appendChild(r);
+      requestAnimationFrame(()=>{ r.style.transform='scale(1)'; r.style.opacity='0'; });
+      setTimeout(()=>r.remove(), 650);
+    });
+
+    // Smooth scroll para links internos
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click', e=>{
+        const id = a.getAttribute('href');
+        const el = document.querySelector(id);
+        if(el){ e.preventDefault(); el.scrollIntoView({behavior:'smooth'}); }
+      });
+    });
+
+    // Nav active highlight
+    const sections = Array.from(document.querySelectorAll('section[id]'));
+    const navLinks = Array.from(document.querySelectorAll('#nav-menu a[href^="#"]'));
+    function setActive() {
+      let activeId = null;
+      const fromTop = window.scrollY + 120;
+      sections.forEach(s=>{
+        const rect = s.getBoundingClientRect();
+        const top = window.scrollY + rect.top;
+        if(top <= fromTop) activeId = s.id;
+      });
+      navLinks.forEach(l=>{
+        l.classList.toggle('active', l.getAttribute('href').slice(1) === activeId);
+      });
+    }
+    window.addEventListener('scroll', setActive); setActive();
+
+    // Reveal on scroll
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    },{threshold:0.12});
+    document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+    // Count‑up stats when hero enters
+    const statsIo = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(!e.isIntersecting) return;
+        document.querySelectorAll('.stat .n').forEach(el=>{
+          const target = parseFloat(el.dataset.count || '0');
+          const suffix = el.dataset.suffix || '';
+          const prefix = el.dataset.prefix || '';
+          let cur = 0, steps = 30, i = 0;
+          const timer = setInterval(()=>{
+            i++; cur = target * (i/steps);
+            let out = (Math.round(cur*10)/10).toString();
+            if(target % 1 === 0) out = Math.round(cur).toString();
+            el.textContent = prefix + out + suffix;
+            if(i>=steps){ el.textContent = prefix + target + suffix; clearInterval(timer); }
+          }, 22);
+        });
+        statsIo.disconnect();
+      });
+    },{threshold:.6});
+    statsIo.observe(document.querySelector('.hero'));
+
+    // Carrossel simples
+    (function(){
+      const track = document.getElementById('t-track');
+      if(!track) return;
+      let idx = 0;
+      const items = track.children;
+      function go(i){
+        idx = (i+items.length)%items.length;
+        const w = items[0].getBoundingClientRect().width + 18; // item + gap
+        track.style.transform = 'translateX(' + (-w*idx) + 'px)';
+      }
+      document.getElementById('t-prev')?.addEventListener('click',()=>go(idx-1));
+      document.getElementById('t-next')?.addEventListener('click',()=>go(idx+1));
+      let t = setInterval(()=>go(idx+1), 4500);
+      track.addEventListener('mouseenter', ()=>clearInterval(t));
+      track.addEventListener('mouseleave', ()=>t=setInterval(()=>go(idx+1), 4500));
+    })();
+
+    // Back to top
+    const toTop = document.getElementById('toTop');
+    window.addEventListener('scroll', ()=>{
+      toTop.style.display = window.scrollY>500 ? 'block' : 'none';
+    });
+    toTop.onclick = ()=>window.scrollTo({top:0,behavior:'smooth'});
+
+    // Pricing toggle (Monthly/Annual)
+    (function(){
+      const sw = document.getElementById('price-switch');
+      if(!sw) return;
+      const values = Array.from(document.querySelectorAll('.price .value'));
+      function apply(){
+        const annual = sw.classList.contains('on');
+        values.forEach(v=>{
+          const m = v.dataset.month, y = v.dataset.year;
+          v.textContent = '$' + (annual ? y : m);
+        });
+        sw.setAttribute('aria-checked', annual ? 'true':'false');
+      }
+      sw.addEventListener('click', ()=>{ sw.classList.toggle('on'); apply(); });
+      sw.addEventListener('keydown', (e)=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); sw.classList.toggle('on'); apply(); }});
+      apply();
+    })();
+
+    // FAQ filter
+    (function(){
+      const input = document.getElementById('faq-search');
+      const list  = document.getElementById('faq-list');
+      if(!input || !list) return;
+      input.addEventListener('input', ()=>{
+        const q = input.value.toLowerCase();
+        list.querySelectorAll('details').forEach(d=>{
+          const txt = d.textContent.toLowerCase();
+          const show = !q || txt.includes(q);
+          d.style.display = show ? '' : 'none';
+          if(show && q) d.open = true;
+        });
+      });
+    })();
+
+    // Command palette (Ctrl/⌘ + K)
+    (function(){
+      const pal = document.getElementById('palette');
+      const inp = document.getElementById('pal-input');
+      const ul  = document.getElementById('pal-list');
+      const items = [
+        {label:'Go to Features', id:'#features'},
+        {label:'Go to How it works', id:'#how'},
+        {label:'Go to Use cases', id:'#usecases'},
+        {label:'Go to Integrations', id:'#integrations'},
+        {label:'Go to Pricing', id:'#pricing'},
+        {label:'Go to FAQ', id:'#faq'},
+        {label:'Ask Cloudly', id:'@ask'},
+      ];
+      function open(){ pal.style.display='flex'; pal.setAttribute('aria-hidden','false'); inp.value=''; render(''); inp.focus(); }
+      function close(){ pal.style.display='none'; pal.setAttribute('aria-hidden','true'); }
+      function render(q){
+        ul.innerHTML='';
+        items.filter(i=>!q || i.label.toLowerCase().includes(q.toLowerCase()))
+          .forEach(i=>{
+            const li = document.createElement('li');
+            li.textContent = i.label;
+            li.onclick = ()=>{
+              close();
+              if(i.id==='@ask'){ window.CLOUDLY_WIDGET_LITE?.open?.(); return; }
+              const el = document.querySelector(i.id); if(el) el.scrollIntoView({behavior:'smooth'});
+            };
+            ul.appendChild(li);
+          });
+      }
+      inp.addEventListener('input', ()=>render(inp.value));
+      pal.addEventListener('click', (e)=>{ if(e.target===pal) close(); });
+      window.addEventListener('keydown', (e)=>{
+        const mod = e.ctrlKey || e.metaKey;
+        if(mod && e.key.toLowerCase()==='k'){ e.preventDefault(); open(); }
+        if(e.key==='Escape') close();
+      });
+    })();
+
+    // Ligações do widget‑lite (hero, nav, cards, CTA, floater, FAQ Ask)
+    (function wire(){
+      function bind(){
+        if (!window.CLOUDLY_WIDGET_LITE || typeof window.CLOUDLY_WIDGET_LITE.open!=='function') return false;
+        const open = ()=>window.CLOUDLY_WIDGET_LITE.open();
+        ['hero-ask','nav-ask','use-ask','cta-ask','faq-launcher','faq-ask'].forEach(id=>{
+          const el = document.getElementById(id);
+          if(el) el.onclick = open;
+        });
+        // Atalho: ? para abrir o assistente
+        window.addEventListener('keydown', (e)=>{
+          if(e.key==='?'){ e.preventDefault(); open(); }
+        });
+        return true;
+      }
+      if(!bind()){
+        const t = setInterval(()=>{ if(bind()) clearInterval(t); }, 120);
+      }
+    })();
+  </script>
+</body>
+</html>
