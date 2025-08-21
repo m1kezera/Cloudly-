@@ -1,11 +1,20 @@
 (function () {
   if (window.__CLOUDLY_LITE__) return; window.__CLOUDLY_LITE__ = true;
 
-  // ===== CONFIG via data-attrs ou defaults =====
-  var script  = document.currentScript;
-  var api     = (script && script.getAttribute('data-api')) || '';
-  var siteKey = (script && script.getAttribute('data-site-key')) || 'cloudly123';
-  var origin  = api || location.origin.replace(/\/+$/, '');
+  // ===== CONFIG (prioriza window.*, depois data-attrs) =====
+  var w = window;
+  var script = document.currentScript || (function(){
+    var s = document.getElementsByTagName('script');
+    return s[s.length - 1];
+  })();
+
+  var apiAttr  = (script && script.getAttribute('data-api')) || '';
+  var keyAttr  = (script && script.getAttribute('data-site-key')) || '';
+
+  var api     = String(w.CLOUDLY_API || apiAttr || '').trim().replace(/\/+$/,''); // sem barra final
+  var siteKey = String(w.CLOUDLY_SITE_KEY || keyAttr || '').trim() || 'cloudly123';
+
+  var origin  = api || location.origin.replace(/\/+$/,'');
   var askURL  = origin + '/ask';
   var leadURL = origin + '/leads'; // <- PLURAL
 
@@ -115,7 +124,7 @@
         // tenta /leads
         let res = await fetch(leadURL, {
           method:'POST',
-          headers:{'Content-Type':'application/json','x-site-key':siteKey},
+          headers:{'Content-Type':'application/json','X-Site-Key':siteKey},
           body: JSON.stringify({ siteKey, name, email, message: msg, source:'widget-lite' })
         });
 
@@ -123,7 +132,7 @@
         if (res.status === 404) {
           res = await fetch(origin + '/lead', {
             method:'POST',
-            headers:{'Content-Type':'application/json','x-site-key':siteKey},
+            headers:{'Content-Type':'application/json','X-Site-Key':siteKey},
             body: JSON.stringify({ siteKey, name, email, message: msg, source:'widget-lite' })
           });
         }
@@ -151,7 +160,7 @@
         method:'POST',
         headers:{
           'Content-Type':'application/json',
-          'x-site-key': siteKey
+          'X-Site-Key': siteKey
         },
         body: JSON.stringify({ siteKey, question: q })
       });
@@ -182,5 +191,6 @@
   panel.querySelector('.clw-send').onclick = send;
   input.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); send(); }});
 
+  // API pública para o site
   window.CLOUDLY_WIDGET_LITE = { open, close };
 })();
