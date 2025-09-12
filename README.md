@@ -1,3 +1,5 @@
+https://cloudly-is65.vercel.app *STATIC SITE*
+
 ![1](https://github.com/user-attachments/assets/6b43dc67-81b1-4ef9-b9c8-a98dc12dfba3)
 Home (desktop) — Landing hero with “Ask Cloudly” CTA. Caption: Responsive landing with assistant CTA.
 
