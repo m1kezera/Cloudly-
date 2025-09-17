@@ -1,3 +1,37 @@
+🌥️ Cloudly – AI Assistant Demo
+
+Cloudly is a demo project showcasing how to embed an AI-powered assistant into a website.
+
+🛠️ Tech Overview
+
+Backend
+
+Built with NestJS (TypeScript)
+
+Connected to Ollama Serve running LLaMA 3
+
+Provided API endpoints for the assistant widget
+
+Frontend
+
+Pure HTML/CSS/JS site
+
+Integrated the chatbot widget via API calls
+
+⚠️ Currently only a static site, so the widget no longer functions (backend offline due to DevOps costs)
+
+🎯 Purpose
+
+This project was developed as a proof-of-concept/demo, showing how a simple frontend can connect to a local or remote AI backend (Ollama + LLaMA 3) to power conversational assistants.
+
+🚧 Current Status
+
+✅ Static frontend live
+
+⚠️ Backend and widget integration offline
+
+👉 The repo remains as a reference implementation for integrating Ollama + NestJS with a lightweight frontend.
+
 https://cloudly-is65.vercel.app *STATIC SITE*
 
 ![1](https://github.com/user-attachments/assets/6b43dc67-81b1-4ef9-b9c8-a98dc12dfba3)
