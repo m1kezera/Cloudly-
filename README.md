@@ -30,7 +30,7 @@ This project was developed as a proof-of-concept/demo, showing how a simple fron
 
 ⚠️ Backend and widget integration offline
 
-👉 The repo remains as a reference implementation for integrating Ollama + NestJS with a lightweight frontend.
+👉 This repo serves as a reference implementation of how to integrate Ollama running locally (ollama serve) with NestJS and a simple HTML frontend.
 
 https://cloudly-is65.vercel.app *STATIC SITE*
 
